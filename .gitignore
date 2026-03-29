@@ -2,4 +2,5 @@ node_modules/
 boss_installations.db
 boss_installations.db-wal
 boss_installations.db-shm
+backups/
 *.log

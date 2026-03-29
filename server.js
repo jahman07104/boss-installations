@@ -3,6 +3,7 @@ const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const db = require('./database');
 
 const app = express();
@@ -206,6 +207,50 @@ app.get('/api/admin/stats', requireAuth, (req, res) => {
     recentInquiries
   });
 });
+
+// ─── ADMIN: EXPORT DATA ───
+
+app.get('/api/admin/export/clients', requireAuth, (req, res) => {
+  const clients = db.prepare('SELECT * FROM clients ORDER BY created_at DESC').all();
+  const header = 'ID,Name,Email,Phone,Address,Service,Notes,Created,Updated';
+  const rows = clients.map(c =>
+    [c.id, csvEscape(c.name), csvEscape(c.email), csvEscape(c.phone), csvEscape(c.address), csvEscape(c.service), csvEscape(c.notes), csvEscape(c.created_at), csvEscape(c.updated_at)].join(',')
+  );
+  const csv = [header, ...rows].join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=clients_export.csv');
+  res.send(csv);
+});
+
+app.get('/api/admin/export/inquiries', requireAuth, (req, res) => {
+  const inquiries = db.prepare('SELECT * FROM inquiries ORDER BY created_at DESC').all();
+  const header = 'ID,Name,Email,Phone,Service,Message,Read,Created';
+  const rows = inquiries.map(i =>
+    [i.id, csvEscape(i.name), csvEscape(i.email), csvEscape(i.phone), csvEscape(i.service), csvEscape(i.message), i.is_read ? 'Yes' : 'No', csvEscape(i.created_at)].join(',')
+  );
+  const csv = [header, ...rows].join('\n');
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', 'attachment; filename=inquiries_export.csv');
+  res.send(csv);
+});
+
+app.get('/api/admin/export/database', requireAuth, (req, res) => {
+  const dbPath = path.join(__dirname, 'boss_installations.db');
+  if (!fs.existsSync(dbPath)) {
+    return res.status(404).json({ error: 'Database file not found.' });
+  }
+  res.setHeader('Content-Disposition', 'attachment; filename=boss_installations_backup.db');
+  res.sendFile(dbPath);
+});
+
+function csvEscape(val) {
+  if (val == null) return '';
+  const str = String(val);
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
 
 // ─── ADMIN: CHANGE PASSWORD ───
 

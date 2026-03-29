@@ -86,12 +86,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ─── LOGOUT ───
-  document.getElementById('logoutBtn').addEventListener('click', async () => {
+  async function doLogout() {
     await fetch('/api/admin/logout', { method: 'POST' });
     dashboard.style.display = 'none';
     loginScreen.style.display = 'flex';
     document.getElementById('username').value = '';
     document.getElementById('password').value = '';
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+
+  // ─── BACK TO SITE (logs out) ───
+  document.getElementById('backToSite').addEventListener('click', async (e) => {
+    e.preventDefault();
+    const confirmed = confirm('Leaving the admin panel will log you out for security. Continue?');
+    if (confirmed) {
+      await fetch('/api/admin/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
   });
 
   // ─── TAB NAVIGATION ───

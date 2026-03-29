@@ -74,8 +74,11 @@
         </a>
       </nav>
       <div class="sidebar-footer">
-        <span id="adminUsername">admin</span>
-        <button class="logout-btn" id="logoutBtn">Logout</button>
+        <a href="#" class="back-to-site" id="backToSite">&larr; View Website</a>
+        <div class="sidebar-footer-row">
+          <span id="adminUsername">admin</span>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
       </div>
     </aside>
 
@@ -170,6 +173,17 @@
       <!-- Settings Tab -->
       <div class="tab-content" id="tab-settings">
         <h2>Settings</h2>
+
+        <div class="settings-card" style="margin-bottom: 24px;">
+          <h3>Data Backup &amp; Export</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">Download your data for safekeeping. We recommend backing up regularly.</p>
+          <div class="export-buttons">
+            <a href="/api/admin/export/database" class="btn btn-primary btn-sm">Download Full Database</a>
+            <a href="/api/admin/export/clients" class="btn btn-outline btn-sm">Export Clients (CSV)</a>
+            <a href="/api/admin/export/inquiries" class="btn btn-outline btn-sm">Export Inquiries (CSV)</a>
+          </div>
+        </div>
+
         <div class="settings-card">
           <h3>Change Password</h3>
           <form id="changePasswordForm">
