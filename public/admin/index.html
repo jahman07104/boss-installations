@@ -39,8 +39,17 @@
   <!-- ─── DASHBOARD ─── -->
   <div class="dashboard" id="dashboard" style="display:none;">
 
+    <!-- Mobile Header -->
+    <div class="mobile-header" id="mobileHeader">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+      <span class="mobile-brand">B<span class="shield-o">O</span>SS Admin</span>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <span class="sidebar-logo">B<span class="shield-o">O</span>SS</span>
         <span class="sidebar-subtitle">Admin Panel</span>
@@ -127,6 +136,7 @@
             </thead>
             <tbody id="inquiriesTableBody"></tbody>
           </table>
+          <div class="mobile-cards" id="inquiriesMobileCards"></div>
         </div>
       </div>
 
@@ -153,6 +163,7 @@
             </thead>
             <tbody id="clientsTableBody"></tbody>
           </table>
+          <div class="mobile-cards" id="clientsMobileCards"></div>
         </div>
       </div>
 

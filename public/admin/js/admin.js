@@ -55,6 +55,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ─── MOBILE SIDEBAR TOGGLE ───
+  const sidebar = document.getElementById('sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    sidebarOverlay.classList.add('active');
+    sidebarToggle.classList.add('active');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    sidebarOverlay.classList.remove('active');
+    sidebarToggle.classList.remove('active');
+  }
+
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+
+  sidebarOverlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar when nav item is clicked (mobile)
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+
   // ─── LOGOUT ───
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     await fetch('/api/admin/logout', { method: 'POST' });
@@ -157,8 +187,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const inquiries = await res.json();
       const tbody = document.getElementById('inquiriesTableBody');
 
+      const mobileCards = document.getElementById('inquiriesMobileCards');
+
       if (inquiries.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No inquiries found</td></tr>';
+        mobileCards.innerHTML = '<div class="empty-state">No inquiries found</div>';
         return;
       }
 
@@ -175,6 +208,33 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="action-btn danger" onclick="deleteInquiry(${i.id})">Delete</button>
           </td>
         </tr>
+      `).join('');
+
+      // Mobile cards
+      mobileCards.innerHTML = inquiries.map(i => `
+        <div class="mobile-card">
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Name</span>
+            <span class="mobile-card-value"><span class="status-dot ${i.is_read ? '' : 'unread'}" style="margin-right:6px;"></span>${esc(i.name)}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Email</span>
+            <span class="mobile-card-value">${esc(i.email)}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Service</span>
+            <span class="mobile-card-value">${esc(i.service)}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Date</span>
+            <span class="mobile-card-value">${formatDate(i.created_at)}</span>
+          </div>
+          <div class="mobile-card-actions">
+            <button class="action-btn" onclick="viewInquiry(${i.id})">View</button>
+            ${!i.is_read ? `<button class="action-btn success" onclick="markRead(${i.id})">Read</button>` : ''}
+            <button class="action-btn danger" onclick="deleteInquiry(${i.id})">Delete</button>
+          </div>
+        </div>
       `).join('');
     } catch (err) {
       console.error('Failed to load inquiries:', err);
@@ -243,8 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const clients = await res.json();
       const tbody = document.getElementById('clientsTableBody');
 
+      const clientMobileCards = document.getElementById('clientsMobileCards');
+
       if (clients.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No clients found</td></tr>';
+        clientMobileCards.innerHTML = '<div class="empty-state">No clients found</div>';
         return;
       }
 
@@ -260,6 +323,32 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="action-btn danger" onclick="deleteClient(${c.id})">Delete</button>
           </td>
         </tr>
+      `).join('');
+
+      // Mobile cards
+      clientMobileCards.innerHTML = clients.map(c => `
+        <div class="mobile-card">
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Name</span>
+            <span class="mobile-card-value">${esc(c.name)}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Email</span>
+            <span class="mobile-card-value">${esc(c.email || '—')}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Phone</span>
+            <span class="mobile-card-value">${esc(c.phone || '—')}</span>
+          </div>
+          <div class="mobile-card-row">
+            <span class="mobile-card-label">Service</span>
+            <span class="mobile-card-value">${esc(c.service || '—')}</span>
+          </div>
+          <div class="mobile-card-actions">
+            <button class="action-btn" onclick="editClient(${c.id})">Edit</button>
+            <button class="action-btn danger" onclick="deleteClient(${c.id})">Delete</button>
+          </div>
+        </div>
       `).join('');
     } catch (err) {
       console.error('Failed to load clients:', err);
